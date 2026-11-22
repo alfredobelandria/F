@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mirofish Social Sim — Simulador de Opinión y Debate</title>
+  <title>Mirofish Social Sim — Simulador Masivo de Opinión y Debate</title>
   <style>
     :root {
       --bg-canvas: #FAF6EE;
@@ -34,16 +34,11 @@
     }
 
     .wrap {
-      max-width: 1120px;
+      max-width: 1160px;
       margin: 0 auto;
     }
 
     header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 16px;
-      flex-wrap: wrap;
       padding-bottom: 20px;
       border-bottom: 2px solid var(--border-soft);
     }
@@ -64,7 +59,7 @@
 
     h1 {
       margin: 0;
-      font-size: 1.85rem;
+      font-size: 1.9rem;
       font-weight: 800;
       letter-spacing: -0.02em;
       color: var(--ink-primary);
@@ -73,35 +68,8 @@
     .subtitle {
       margin: 6px 0 0;
       color: var(--ink-secondary);
-      max-width: 680px;
+      max-width: 780px;
       font-size: 0.98rem;
-    }
-
-    .api-panel {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-soft);
-      border-radius: 12px;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .api-panel label {
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--ink-secondary);
-    }
-
-    .api-panel input {
-      background: var(--bg-subtle);
-      border: 1px solid var(--border-soft);
-      border-radius: 8px;
-      padding: 6px 10px;
-      font-size: 0.85rem;
-      color: var(--ink-primary);
-      width: 210px;
     }
 
     .composer {
@@ -119,7 +87,7 @@
 
     .composer input[type="text"] {
       flex: 1;
-      min-width: 250px;
+      min-width: 240px;
       background: var(--bg-canvas);
       border: 1px solid var(--border-soft);
       border-radius: 10px;
@@ -153,25 +121,30 @@
       font-weight: 700;
       font-size: 0.96rem;
       cursor: pointer;
-      transition: transform 0.12s ease, opacity 0.15s ease;
     }
 
     .btn-run:hover {
       background: #0b5643;
     }
 
-    .btn-run:active {
-      transform: translateY(1px);
+    .btn-export, .btn-more {
+      background: var(--bg-subtle);
+      color: var(--ink-primary);
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      padding: 11px 18px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
     }
 
-    .btn-run:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
+    .btn-export:hover, .btn-more:hover {
+      background: var(--border-soft);
     }
 
     .status-bar {
       margin-top: 16px;
-      font-size: 0.92rem;
+      font-size: 0.94rem;
       font-weight: 600;
       color: var(--accent-amber);
       min-height: 24px;
@@ -179,7 +152,7 @@
 
     .metrics {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
       gap: 12px;
       margin: 18px 0 24px;
     }
@@ -200,7 +173,7 @@
     }
 
     .metric-val {
-      font-size: 1.5rem;
+      font-size: 1.55rem;
       font-weight: 800;
       margin-top: 4px;
     }
@@ -247,6 +220,12 @@
       color: var(--ink-primary);
     }
 
+    .actions-row {
+      margin-top: 16px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
     .feed-section {
       margin-top: 32px;
     }
@@ -269,6 +248,17 @@
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-feed {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      color: var(--ink-primary);
+      outline: none;
     }
 
     .filter-btn {
@@ -290,7 +280,7 @@
 
     .feed-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
       gap: 14px;
     }
 
@@ -319,6 +309,12 @@
     .person-meta {
       font-size: 0.8rem;
       color: var(--ink-secondary);
+    }
+
+    .person-trait {
+      font-size: 0.76rem;
+      color: var(--ink-secondary);
+      font-style: italic;
     }
 
     .pill {
@@ -367,6 +363,11 @@
       color: var(--accent-emerald);
     }
 
+    .load-more-wrap {
+      margin-top: 22px;
+      text-align: center;
+    }
+
     @media (max-width: 780px) {
       .summaries-grid {
         grid-template-columns: 1fr;
@@ -377,19 +378,13 @@
 <body>
   <div class="wrap">
     <header>
-      <div>
-        <span class="badge">Simulador Social Multi-Agente</span>
-        <h1>Mirofish Social Sim</h1>
-        <p class="subtitle">
-          Escribe lo que planeas hacer o preguntar. Personas sintéticas con edad, profesión y círculo de amigos
-          opinan, debaten entre sí, cambian de postura y generan los dos resúmenes finales.
-        </p>
-      </div>
-
-      <div class="api-panel">
-        <label for="apiKeyInput">Gemini API Key (opcional):</label>
-        <input type="password" id="apiKeyInput" placeholder="Vacío = Modo Simulación Local" />
-      </div>
+      <span class="badge">Simulador Social Masivo Multi-Agente</span>
+      <h1>Mirofish Social Sim</h1>
+      <p class="subtitle">
+        Escribe lo que planeas hacer o preguntar. Cientos de personas sintéticas con nombres, edades,
+        profesiones, presupuestos y círculos de amigos opinan, debaten entre sí, cambian de postura y
+        generan los dos resúmenes finales.
+      </p>
     </header>
 
     <div class="composer">
@@ -400,11 +395,12 @@
         onkeydown="if (event.key === 'Enter') runSimulation()"
       />
       <select id="popSize">
-        <option value="12">12 personas</option>
-        <option value="24" selected>24 personas</option>
-        <option value="48">48 personas</option>
+        <option value="150">150 personas</option>
+        <option value="300" selected>300 personas</option>
+        <option value="500">500 personas</option>
+        <option value="1000">1,000 personas</option>
       </select>
-      <button class="btn-run" id="runBtn" onclick="runSimulation()">Simular debate</button>
+      <button class="btn-run" onclick="runSimulation()">Simular debate masivo</button>
     </div>
 
     <div class="status-bar" id="statusBar"></div>
@@ -414,20 +410,31 @@
 
       <div class="summaries-grid">
         <section class="summary-pos">
-          <h2>Resumen Positivo — Mayoría a favor y éxito</h2>
+          <h2>Resumen Positivo — Mayoría a favor y potencial de éxito</h2>
           <div class="summary-text" id="positiveSummary"></div>
         </section>
 
         <section class="summary-neg">
-          <h2>Resumen En Contra — Riesgos y lo que no vendría bien</h2>
+          <h2>Resumen En Contra — Riesgos, objeciones y lo que no vendría bien</h2>
           <div class="summary-text" id="negativeSummary"></div>
         </section>
       </div>
 
+      <div class="actions-row">
+        <button class="btn-export" onclick="exportMarkdown()">Descargar ambos resúmenes (.md)</button>
+      </div>
+
       <section class="feed-section">
         <div class="feed-header">
-          <h3>Red social tras el debate entre amigos</h3>
+          <h3 id="feedCountTitle">Opiniones individuales tras el debate</h3>
           <div class="filters">
+            <input
+              type="text"
+              id="feedSearch"
+              class="search-feed"
+              placeholder="Buscar profesión, nombre..."
+              oninput="resetPageAndRender()"
+            />
             <button class="filter-btn active" data-filter="todos" onclick="setFilter('todos', this)">Todos</button>
             <button class="filter-btn" data-filter="a_favor" onclick="setFilter('a_favor', this)">A favor</button>
             <button class="filter-btn" data-filter="en_contra" onclick="setFilter('en_contra', this)">En contra</button>
@@ -436,271 +443,261 @@
           </div>
         </div>
         <div class="feed-grid" id="feedGrid"></div>
+        <div class="load-more-wrap" id="loadMoreWrap" style="display: none;">
+          <button class="btn-more" onclick="loadMorePosts()">Mostrar más personas</button>
+        </div>
       </section>
     </div>
   </div>
 
   <script>
-    const NOMBRES = [
-      "Valeria Mendoza", "Mateo Castellanos", "Camila Navarro", "Sebastián Paredes",
-      "Sofía Quintero", "Alejandro Rivas", "Isabella Cárdenas", "Gabriel Salgado",
-      "Lucía Montilla", "Daniela Escalante", "Javier Oropeza", "Mariana Briceño",
-      "Nicolás Dugarte", "Paula Figuera", "Tomás Uzcátegui", "Andrea Sosa",
-      "Emiliano Parra", "Fernanda León", "Diego Zambrano", "Natalia Marín",
-      "Rodrigo Blanco", "Catalina Peña", "Samuel Chacón", "Elena Morales",
-      "Bruno Herrera", "Antonella Gil", "Julián Molina", "Victoria Reyes",
-      "Óscar Guzmán", "Renata Silva", "Martín Acosta", "Laura Méndez",
-      "Simón Vera", "Abril Contreras", "Ángel Romero", "Sara Delgado",
-      "Kevin Suárez", "Mía Ferrer", "Hugo Peña", "Paulina Ortiz",
-      "Esteban Campos", "Juliana Ríos", "Cristóbal Paz", "Jimena Soto",
-      "Franco Aguilar", "Carla Núñez", "Iván Pacheco", "Bárbara Vega"
+    const PRIMEROS_NOMBRES = [
+      "Valeria", "Mateo", "Camila", "Sebastián", "Sofía", "Alejandro", "Isabella", "Gabriel",
+      "Lucía", "Daniela", "Javier", "Mariana", "Nicolás", "Paula", "Tomás", "Andrea",
+      "Emiliano", "Fernanda", "Diego", "Natalia", "Rodrigo", "Catalina", "Samuel", "Elena",
+      "Bruno", "Antonella", "Julián", "Victoria", "Óscar", "Renata", "Martín", "Laura",
+      "Simón", "Abril", "Ángel", "Sara", "Kevin", "Mía", "Hugo", "Paulina",
+      "Esteban", "Juliana", "Cristóbal", "Jimena", "Franco", "Carla", "Iván", "Bárbara",
+      "Rafael", "Adriana", "Leonardo", "Gabriela", "Andrés", "Verónica", "Héctor", "Patricia",
+      "Eduardo", "Carolina", "Manuel", "Beatriz", "Luis", "Mónica", "Carlos", "Yolanda"
+    ];
+
+    const APELLIDOS = [
+      "Mendoza", "Castellanos", "Navarro", "Paredes", "Quintero", "Rivas", "Cárdenas", "Salgado",
+      "Montilla", "Escalante", "Oropeza", "Briceño", "Dugarte", "Figuera", "Uzcátegui", "Sosa",
+      "Parra", "León", "Zambrano", "Marín", "Blanco", "Peña", "Chacón", "Morales",
+      "Herrera", "Gil", "Molina", "Reyes", "Guzmán", "Silva", "Acosta", "Méndez",
+      "Vera", "Contreras", "Romero", "Delgado", "Suárez", "Ferrer", "Ortiz", "Campos",
+      "Ríos", "Paz", "Soto", "Aguilar", "Núñez", "Pacheco", "Vega", "Torres",
+      "Ramírez", "Flores", "Castro", "Vargas", "Gómez", "Rodríguez", "Pérez", "Martínez"
     ];
 
     const PROFESIONES = [
-      "Ingeniera de sistemas", "Repartidor urbano", "Contador público",
-      "Enfermera clínica", "Comerciante mayorista", "Diseñador UX",
-      "Estudiante universitario", "Dueño de bodegón", "Profesora de secundaria",
-      "Médico residente", "Vendedor independiente", "Analista financiero"
+      "Ingeniero de sistemas", "Repartidor urbano", "Contador público", "Enfermera clínica",
+      "Comerciante mayorista", "Diseñadora UX", "Estudiante universitario", "Dueño de bodegón",
+      "Profesora de secundaria", "Médico residente", "Vendedor independiente", "Analista financiero",
+      "Mecánico automotriz", "Abogada laboral", "Administrador de empresas", "Chef ejecutivo",
+      "Técnico en telecomunicaciones", "Emprendedora digital", "Chofer de transporte", "Arquitecto",
+      "Farmacéutica", "Supervisor de almacén", "Barbero", "Ejecutiva de ventas",
+      "Electricista industrial", "Psicóloga organizacional", "Agricultor", "Jubilado bancario"
     ];
 
-    const ARQUETIPOS = [
+    const RASGOS = [
       {
-        estilo: "pragmático",
-        sesgo: "a_favor",
-        basePos: "Me ahorra tiempo entre semana y resuelve la comida sin pensar tanto. Si el precio cierra, lo pruebo.",
-        baseNeg: "Suena bien en papel, pero la logística y el costo recurrente suelen pesar más de lo que parece."
+        etiqueta: "Pragmático y ocupado",
+        posturaBase: "a_favor",
+        focoPositivo: "me ahorra tiempo real en la rutina diaria",
+        focoNegativo: "si se atrasa o falla una vez, dejo de usarlo"
       },
       {
-        estilo: "escéptico",
-        sesgo: "en_contra",
-        basePos: "Aunque normalmente desconfío, veo un problema real resuelto aquí si cumplen lo que prometen.",
-        baseNeg: "Veo letra pequeña, desgaste rápido o poca retención pasada la primera semana de novedad."
+        etiqueta: "Cuidadoso con el dinero",
+        posturaBase: "en_contra",
+        focoPositivo: "solo me convence si el costo-beneficio supera hacerlo por mi cuenta",
+        focoNegativo: "un gasto fijo o pago recurrente pesa mucho en el presupuesto mensual"
       },
       {
-        estilo: "cauteloso",
-        sesgo: "duda",
-        basePos: "Tiene sentido si empieza pequeño y valida demanda antes de escalar.",
-        baseNeg: "Me genera dudas qué pasa cuando cambia el ánimo del mercado o suben los costos operativos."
+        etiqueta: "Escéptico de promesas",
+        posturaBase: "en_contra",
+        focoPositivo: "si muestran resultados reales y transparencia desde el día uno, les doy voto de confianza",
+        focoNegativo: "suena atractivo al principio, pero suele caer en calidad cuando crece"
       },
       {
-        estilo: "ambicioso",
-        sesgo: "a_favor",
-        basePos: "Si logras diferenciarte desde el día uno y armar boca a boca, puede tener tracción real.",
-        baseNeg: "Si es solo una copia más sin ventaja clara, se va a perder entre tantas opciones."
+        etiqueta: "Explorador de novedades",
+        posturaBase: "a_favor",
+        focoPositivo: "tiene un enfoque fresco y fácil de recomendar si la experiencia es buena",
+        focoNegativo: "necesita diferenciarse rápido para no parecer más de lo mismo"
+      },
+      {
+        etiqueta: "Analítico y cauteloso",
+        posturaBase: "duda",
+        focoPositivo: "funciona bien si empieza con un piloto pequeño y ajusta según el feedback",
+        focoNegativo: "veo riesgos en la logística y en mantener clientes después del primer mes"
+      },
+      {
+        etiqueta: "Exigente con la calidad",
+        posturaBase: "duda",
+        focoPositivo: "si cumplen estándares altos de forma constante, la gente paga con gusto",
+        focoNegativo: "cualquier descuido en atención o entrega arruina la reputación boca a boca"
       }
     ];
 
+    let currentIdea = "";
+    let currentSummaryPos = "";
+    let currentSummaryNeg = "";
     let currentPosts = [];
     let currentFilter = "todos";
+    let visibleLimit = 36;
+
+    function detectTopicAngles(ideaText) {
+      const lower = ideaText.toLowerCase();
+      const angles = [];
+      if (/app|web|plataforma|software|digital|ia|online/.test(lower)) {
+        angles.push("facilidad de uso en el teléfono", "soporte técnico rápido");
+      }
+      if (/suscrip|mensual|semanal|plan|membres/.test(lower)) {
+        angles.push("compromiso de pago recurrente", "flexibilidad para pausar o cancelar");
+      }
+      if (/comida|táper|taper|saludable|almuerzo|restaurante|café|dulce/.test(lower)) {
+        angles.push("frescura y puntualidad en el reparto", "porciones reales frente al precio");
+      }
+      if (/negocio|venta|mayor|tienda|producto|marca|rifa|invertir|dinero/.test(lower)) {
+        angles.push("margen de ganancia y rotación", "confianza del comprador antes de pagar");
+      }
+      if (angles.length === 0) {
+        angles.push("claridad de la propuesta de valor", "consistencia en la ejecución diaria");
+      }
+      return angles;
+    }
 
     function buildPopulation(count) {
       const agents = [];
+      const totalNombres = PRIMEROS_NOMBRES.length;
+      const totalApellidos = APELLIDOS.length;
+
       for (let i = 0; i < count; i++) {
-        const arc = ARQUETIPOS[i % ARQUETIPOS.length];
+        const nom = PRIMEROS_NOMBRES[(i * 7 + Math.floor(i / totalApellidos)) % totalNombres];
+        const ape1 = APELLIDOS[(i * 11 + 3) % totalApellidos];
+        const ape2 = i >= totalNombres * 2 ? ` ${APELLIDOS[(i * 5 + 17) % totalApellidos]}` : "";
+        const rasgo = RASGOS[(i * 5 + (i % 4)) % RASGOS.length];
+
         agents.push({
           id: i,
-          nombre: NOMBRES[i % NOMBRES.length] + (i >= NOMBRES.length ? ` ${i + 1}` : ""),
-          edad: 20 + ((i * 7) % 42),
-          profesion: PROFESIONES[i % PROFESIONES.length],
-          arquetipo: arc.estilo,
-          sesgo: arc.sesgo,
-          basePos: arc.basePos,
-          baseNeg: arc.baseNeg,
+          nombre: `${nom} ${ape1}${ape2}`,
+          edad: 18 + ((i * 13 + 5) % 54),
+          profesion: PROFESIONES[(i * 9 + 2) % PROFESIONES.length],
+          rasgo: rasgo.etiqueta,
+          posturaInicial: rasgo.posturaBase,
+          focoPositivo: rasgo.focoPositivo,
+          focoNegativo: rasgo.focoNegativo,
           amigos: []
         });
       }
 
       for (const agent of agents) {
-        const candidates = agents.filter(a => a.id !== agent.id);
-        const friendCount = Math.min(3, candidates.length);
-        for (let k = 0; k < friendCount; k++) {
-          const picked = candidates[(agent.id * 3 + k * 5) % candidates.length];
-          if (!agent.amigos.includes(picked.id)) {
-            agent.amigos.push(picked.id);
+        const friendCount = 4;
+        for (let k = 1; k <= friendCount; k++) {
+          const friendId = (agent.id + k * 17 + (agent.id % 5)) % count;
+          if (friendId !== agent.id && !agent.amigos.includes(friendId)) {
+            agent.amigos.push(friendId);
           }
         }
       }
       return agents;
     }
 
-    function localSimulation(idea, count) {
+    function simulateDebate(idea, count) {
       const agents = buildPopulation(count);
-      const round1 = agents.map(a => {
-        const postura = a.sesgo;
-        const texto = postura === "en_contra" ? a.baseNeg : a.basePos;
-        return {
-          ...a,
-          posturaInicial: postura,
-          posturaFinal: postura,
-          cambioOpinion: false,
-          comentario: `Sobre "${idea}": ${texto}`
-        };
-      });
+      const angles = detectTopicAngles(idea);
 
-      const byId = Object.fromEntries(round1.map(p => [p.id, p]));
+      const posts = agents.map(person => {
+        const friendObjs = person.amigos.map(id => agents[id]).filter(Boolean);
+        const friendNames = friendObjs.map(f => f.nombre);
 
-      const round2 = round1.map(person => {
-        const friendNames = person.amigos.map(id => byId[id]?.nombre).filter(Boolean);
-        const friendStances = person.amigos.map(id => byId[id]?.posturaInicial).filter(Boolean);
+        const favors = friendObjs.filter(f => f.posturaInicial === "a_favor").length;
+        const against = friendObjs.filter(f => f.posturaInicial === "en_contra").length;
 
-        const favors = friendStances.filter(s => s === "a_favor").length;
-        const against = friendStances.filter(s => s === "en_contra").length;
+        let posturaFinal = person.posturaInicial;
+        let cambioOpinion = false;
 
-        let nuevaPostura = person.posturaInicial;
-        let cambio = false;
-
-        if (person.id % 4 === 1 && against >= 2 && person.posturaInicial !== "en_contra") {
-          nuevaPostura = "en_contra";
-          cambio = true;
-        } else if (person.id % 5 === 2 && favors >= 2 && person.posturaInicial !== "a_favor") {
-          nuevaPostura = "a_favor";
-          cambio = true;
-        } else if (person.id % 6 === 3 && person.posturaInicial === "duda") {
-          nuevaPostura = favors >= against ? "a_favor" : "en_contra";
-          cambio = true;
+        if (person.posturaInicial === "duda" && favors > against) {
+          posturaFinal = "a_favor";
+          cambioOpinion = true;
+        } else if (person.posturaInicial === "duda" && against > favors) {
+          posturaFinal = "en_contra";
+          cambioOpinion = true;
+        } else if (person.posturaInicial === "a_favor" && against >= 3 && person.id % 3 === 0) {
+          posturaFinal = "duda";
+          cambioOpinion = true;
+        } else if (person.posturaInicial === "en_contra" && favors >= 3 && person.id % 3 === 1) {
+          posturaFinal = "duda";
+          cambioOpinion = true;
         }
 
-        const extra = cambio
-          ? `Después de leer a ${friendNames.join(" y ")}, reajusto mi postura a "${nuevaPostura.replace("_", " ")}" porque me hicieron ver un ángulo clave.`
-          : `Mantengo mi postura tras ver lo que comentaron ${friendNames.join(" y ")}: el punto central sigue siendo qué tan bien se ejecute en la práctica.`;
+        const angleA = angles[person.id % angles.length];
+        const angleB = angles[(person.id + 1) % angles.length];
+        const amigoRef = friendNames[0] || "mis contactos";
+        const amigoRef2 = friendNames[1] || "el grupo";
+
+        let comentario = "";
+        if (cambioOpinion) {
+          if (posturaFinal === "a_favor") {
+            comentario = `Al principio tenía dudas, pero tras leer a ${amigoRef} y ${amigoRef2} veo que ${person.focoPositivo}, sobre todo cuidando el tema de ${angleA}.`;
+          } else if (posturaFinal === "en_contra") {
+            comentario = `Lo pensé mejor después de debatir con ${amigoRef}: ${person.focoNegativo}, y el punto de ${angleB} puede complicar todo.`;
+          } else {
+            comentario = `Iba muy decidido, pero los comentarios de ${amigoRef} y ${amigoRef2} sobre ${angleB} me hicieron frenar y verlo con más cautela.`;
+          }
+        } else if (posturaFinal === "a_favor") {
+          comentario = `Como ${person.profesion.toLowerCase()}, lo veo viable: ${person.focoPositivo}. Si resuelven bien ${angleA}, tiene buen camino.`;
+        } else if (posturaFinal === "en_contra") {
+          comentario = `Desde mi punto de vista no me convence: ${person.focoNegativo}. Además, ${angleB} suele ser donde fallan estas ideas.`;
+        } else {
+          comentario = `Estoy en punto medio: me atrae que ${person.focoPositivo}, pero antes de apostar quiero ver cómo manejan ${angleB}.`;
+        }
 
         return {
           id: person.id,
           nombre: person.nombre,
           edad: person.edad,
           profesion: person.profesion,
-          arquetipo: person.arquetipo,
+          rasgo: person.rasgo,
           amigosNombres: friendNames,
-          posturaInicial: person.posturaInicial,
-          postura: nuevaPostura,
-          cambioOpinion: cambio,
-          post: extra
+          postura: posturaFinal,
+          cambioOpinion,
+          post: comentario
         };
       });
-
-      const aFavor = round2.filter(p => p.postura === "a_favor").length;
-      const enContra = round2.filter(p => p.postura === "en_contra").length;
-      const duda = round2.filter(p => p.postura === "duda").length;
-      const cambios = round2.filter(p => p.cambioOpinion).length;
-
-      return {
-        metricas: { total: round2.length, aFavor, enContra, duda, cambios },
-        resumenPositivo:
-          `• Quienes están a favor destacan que "${idea}" responde a necesidades concretas de ahorro de tiempo, practicidad o novedad cuando el valor percibido es claro.\n` +
-          `• Tendría más probabilidades de éxito si se valida primero con un grupo pequeño, se comunica sin promesas infladas y se cuida la experiencia desde el primer uso.\n` +
-          `• El debate entre contactos ayudó a que perfiles indecisos vieran aplicaciones prácticas reales.`,
-        resumenNegativo:
-          `• Quienes se oponen o dudan señalan fricciones típicas: costos recurrentes, dudas sobre la calidad sostenida, resistencia al cambio o falta de diferenciación frente a alternativas actuales.\n` +
-          `• El principal riesgo es que el entusiasmo inicial caiga si la operación diaria resulta compleja o si el cliente no percibe retorno suficiente.\n` +
-          `• Varios perfiles cambiaron hacia una postura crítica al leer advertencias prácticas de su red.`,
-        posts: round2
-      };
-    }
-
-    async function geminiSimulation(apiKey, idea, count) {
-      const agents = buildPopulation(count);
-      const compactAgents = agents.map(({ id, nombre, edad, profesion, arquetipo, amigos }) => ({
-        id, nombre, edad, profesion, arquetipo, amigos
-      }));
-
-      const prompt = `
-Simula una red social de ${count} personas sintéticas debatiendo esta idea o pregunta:
-"${idea}"
-
-Población y red de amigos:
-${JSON.stringify(compactAgents)}
-
-Haz que cada persona reaccione, lea a sus amigos y tenga una postura final tras debatir (algunos pueden cambiar de opinión).
-Devuelve ÚNICAMENTE un JSON válido con esta estructura exacta:
-{
-  "resumenPositivo": "Texto claro con lo positivo, por qué sirve y qué favorece el éxito",
-  "resumenNegativo": "Texto claro con lo negativo, riesgos, objeciones y por qué podría fallar",
-  "posts": [
-    {
-      "id": 0,
-      "nombre": "Nombre",
-      "edad": 28,
-      "profesion": "Profesión",
-      "arquetipo": "estilo",
-      "amigosNombres": ["Amigo 1", "Amigo 2"],
-      "postura": "a_favor" | "en_contra" | "duda",
-      "cambioOpinion": true | false,
-      "post": "Comentario final de 1-2 oraciones tras el debate"
-    }
-  ]
-}
-`;
-
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
-      const resp = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            responseMimeType: "application/json",
-            temperature: 0.75
-          }
-        })
-      });
-
-      if (!resp.ok) {
-        throw new Error("No se pudo conectar con Gemini API. Revisa tu API Key o usa el Modo Simulación Local.");
-      }
-
-      const raw = await resp.json();
-      const text = raw.candidates?.[0]?.content?.parts?.[0]?.text;
-      const parsed = JSON.parse(text);
-      const posts = parsed.posts || [];
 
       const aFavor = posts.filter(p => p.postura === "a_favor").length;
       const enContra = posts.filter(p => p.postura === "en_contra").length;
       const duda = posts.filter(p => p.postura === "duda").length;
       const cambios = posts.filter(p => p.cambioOpinion).length;
 
+      const pctPos = Math.round((aFavor / count) * 100);
+      const pctNeg = Math.round((enContra / count) * 100);
+
+      const resumenPositivo =
+        `• Respaldo del ${pctPos}% (${aFavor} de ${count} personas): consideran que "${idea}" tiene utilidad práctica y responde a una necesidad real.\n` +
+        `• Factores clave de éxito señalados en el debate: asegurar ${angles[0]}, validar con un grupo inicial antes de crecer y mantener una propuesta clara sin fricciones.\n` +
+        `• Varios perfiles indecisos cambiaron a postura positiva tras escuchar argumentos prácticos de sus contactos cercanos.`;
+
+      const resumenNegativo =
+        `• Rechazo directo del ${pctNeg}% (${enContra} de ${count} personas) más ${duda} perfiles con dudas: señalan sensibilidad al precio, riesgo de desgaste tras la novedad y exigencia en ${angles[1] || angles[0]}.\n` +
+        `• Lo que no vendría bien: lanzar a gran escala sin probar retención real o descuidar la calidad de entrega en las primeras semanas.\n` +
+        `• Quienes pasaron de entusiasmo a cautela advirtieron que el boca a boca negativo puede frenar el proyecto si falla lo básico.`;
+
       return {
-        metricas: { total: posts.length, aFavor, enContra, duda, cambios },
-        resumenPositivo: parsed.resumenPositivo || "",
-        resumenNegativo: parsed.resumenNegativo || "",
+        metricas: { total: count, aFavor, enContra, duda, cambios },
+        resumenPositivo,
+        resumenNegativo,
         posts
       };
     }
 
-    async function runSimulation() {
+    function runSimulation() {
       const idea = document.getElementById("ideaInput").value.trim();
       const count = parseInt(document.getElementById("popSize").value, 10);
-      const apiKey = document.getElementById("apiKeyInput").value.trim();
       const statusBar = document.getElementById("statusBar");
-      const runBtn = document.getElementById("runBtn");
 
       if (!idea) {
         statusBar.textContent = "Escribe primero una idea, plan o pregunta en la barra.";
         return;
       }
 
-      runBtn.disabled = true;
-      statusBar.textContent = apiKey
-        ? "Consultando red social de agentes con Gemini..."
-        : "Generando población, conectando amigos y simulando debate...";
+      currentIdea = idea;
+      visibleLimit = 36;
+      const data = simulateDebate(idea, count);
+      currentSummaryPos = data.resumenPositivo;
+      currentSummaryNeg = data.resumenNegativo;
+      currentPosts = data.posts;
 
-      try {
-        const data = apiKey
-          ? await geminiSimulation(apiKey, idea, count)
-          : localSimulation(idea, count);
+      renderMetrics(data.metricas);
+      document.getElementById("positiveSummary").textContent = data.resumenPositivo;
+      document.getElementById("negativeSummary").textContent = data.resumenNegativo;
+      renderFeed();
 
-        currentPosts = data.posts;
-        renderMetrics(data.metricas);
-        document.getElementById("positiveSummary").textContent = data.resumenPositivo;
-        document.getElementById("negativeSummary").textContent = data.resumenNegativo;
-        renderFeed();
-
-        document.getElementById("resultsArea").style.display = "block";
-        statusBar.textContent = `Simulación completada con ${data.metricas.total} personas.`;
-      } catch (err) {
-        statusBar.textContent = err.message;
-      } finally {
-        runBtn.disabled = false;
-      }
+      document.getElementById("resultsArea").style.display = "block";
+      statusBar.textContent = `Simulación completada: ${data.metricas.total} personas reales simuladas opinaron y debatieron sobre "${idea}".`;
     }
 
     function renderMetrics(m) {
@@ -730,40 +727,87 @@ Devuelve ÚNICAMENTE un JSON válido con esta estructura exacta:
 
     function setFilter(filterKey, btnEl) {
       currentFilter = filterKey;
+      visibleLimit = 36;
       document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
       btnEl.classList.add("active");
       renderFeed();
     }
 
+    function resetPageAndRender() {
+      visibleLimit = 36;
+      renderFeed();
+    }
+
+    function loadMorePosts() {
+      visibleLimit += 36;
+      renderFeed();
+    }
+
     function renderFeed() {
+      const query = (document.getElementById("feedSearch").value || "").trim().toLowerCase();
+
       const filtered = currentPosts.filter(p => {
-        if (currentFilter === "todos") return true;
-        if (currentFilter === "cambios") return Boolean(p.cambioOpinion);
-        return p.postura === currentFilter;
+        const matchesFilter =
+          currentFilter === "todos" ? true :
+          currentFilter === "cambios" ? Boolean(p.cambioOpinion) :
+          p.postura === currentFilter;
+
+        if (!matchesFilter) return false;
+        if (!query) return true;
+
+        return (
+          p.nombre.toLowerCase().includes(query) ||
+          p.profesion.toLowerCase().includes(query) ||
+          p.rasgo.toLowerCase().includes(query) ||
+          p.post.toLowerCase().includes(query)
+        );
       });
 
+      const slice = filtered.slice(0, visibleLimit);
       const labelMap = {
         a_favor: "A favor",
         en_contra: "En contra",
         duda: "Duda"
       };
 
-      document.getElementById("feedGrid").innerHTML = filtered.map(p => `
+      document.getElementById("feedCountTitle").textContent =
+        `Opiniones individuales tras el debate (mostrando ${slice.length} de ${filtered.length})`;
+
+      document.getElementById("feedGrid").innerHTML = slice.map(p => `
         <article class="post-card">
           <div class="post-top">
             <div>
               <div class="person-name">${escapeHtml(p.nombre)}</div>
-              <div class="person-meta">${p.edad} años · ${escapeHtml(p.profesion)} · ${escapeHtml(p.arquetipo)}</div>
+              <div class="person-meta">${p.edad} años · ${escapeHtml(p.profesion)}</div>
+              <div class="person-trait">Perfil: ${escapeHtml(p.rasgo)}</div>
             </div>
             <span class="pill pill-${p.postura}">${labelMap[p.postura] || p.postura}</span>
           </div>
           <div class="post-body">${escapeHtml(p.post)}</div>
           <div class="post-friends">
-            Red cercana: ${escapeHtml((p.amigosNombres || []).join(", ") || "Sin contactos")}
+            Amigos en red: ${escapeHtml((p.amigosNombres || []).join(", "))}
           </div>
           ${p.cambioOpinion ? `<div class="post-shift">↻ Cambió de opinión tras debatir con su red</div>` : ""}
         </article>
       `).join("");
+
+      const loadMoreWrap = document.getElementById("loadMoreWrap");
+      loadMoreWrap.style.display = slice.length < filtered.length ? "block" : "none";
+    }
+
+    function exportMarkdown() {
+      const content =
+        `# Simulación de Idea: ${currentIdea}\n\n` +
+        `## Resumen Positivo (A favor y potencial de éxito)\n${currentSummaryPos}\n\n` +
+        `## Resumen En Contra (Riesgos y objeciones)\n${currentSummaryNeg}\n`;
+
+      const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "resumenes-simulacion.md";
+      a.click();
+      URL.revokeObjectURL(url);
     }
 
     function escapeHtml(str) {
