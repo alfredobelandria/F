@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mirofish Social Sim — Simulador de Opinión y Debate</title>
+  <style>
+    :root {
+      --bg-canvas: #FAF6EE;
+      --bg-surface: #FFFDF9;
+      --bg-subtle: #F2ECE1;
+      --ink-primary: #172A24;
+      --ink-secondary: #4D615A;
+      --border-soft: #E2D9C8;
+      --accent-emerald: #0F6E56;
+      --accent-emerald-soft: #E6F4EF;
+      --accent-amber: #D97706;
+      --accent-amber-soft: #FEF3C7;
+      --accent-coral: #C2410C;
+      --accent-coral-soft: #FFEDD5;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 28px 18px 60px;
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-canvas);
+      color: var(--ink-primary);
+      line-height: 1.5;
+    }
+
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--border-soft);
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--accent-emerald-soft);
+      color: var(--accent-emerald);
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+      border: 1px solid rgba(15, 110, 86, 0.22);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--ink-primary);
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      color: var(--ink-secondary);
+      max-width: 680px;
+      font-size: 0.98rem;
+    }
+
+    .api-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .api-panel label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--ink-secondary);
+    }
+
+    .api-panel input {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      color: var(--ink-primary);
+      width: 210px;
+    }
+
+    .composer {
+      margin-top: 22px;
+      background: var(--bg-surface);
+      border: 2px solid var(--ink-primary);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 4px 4px 0px var(--accent-amber);
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .composer input[type="text"] {
+      flex: 1;
+      min-width: 250px;
+      background: var(--bg-canvas);
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 1rem;
+      color: var(--ink-primary);
+      outline: none;
+    }
+
+    .composer input[type="text"]:focus {
+      border-color: var(--accent-emerald);
+    }
+
+    .composer select {
+      background: var(--bg-subtle);
+      color: var(--ink-primary);
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+    }
+
+    .btn-run {
+      background: var(--accent-emerald);
+      color: #FFFDF9;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 22px;
+      font-weight: 700;
+      font-size: 0.96rem;
+      cursor: pointer;
+      transition: transform 0.12s ease, opacity 0.15s ease;
+    }
+
+    .btn-run:hover {
+      background: #0b5643;
+    }
+
+    .btn-run:active {
+      transform: translateY(1px);
+    }
+
+    .btn-run:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .status-bar {
+      margin-top: 16px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--accent-amber);
+      min-height: 24px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 18px 0 24px;
+    }
+
+    .metric-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    .metric-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--ink-secondary);
+      font-weight: 700;
+    }
+
+    .metric-val {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    .val-pos { color: var(--accent-emerald); }
+    .val-neg { color: var(--accent-coral); }
+    .val-amb { color: var(--accent-amber); }
+
+    .summaries-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .summary-pos {
+      background: var(--accent-emerald-soft);
+      border: 2px solid var(--accent-emerald);
+      border-radius: 16px;
+      padding: 20px 22px;
+    }
+
+    .summary-neg {
+      background: var(--accent-coral-soft);
+      border: 2px solid var(--accent-coral);
+      border-radius: 16px;
+      padding: 20px 22px;
+    }
+
+    .summary-pos h2 {
+      margin: 0 0 10px;
+      color: var(--accent-emerald);
+      font-size: 1.2rem;
+    }
+
+    .summary-neg h2 {
+      margin: 0 0 10px;
+      color: var(--accent-coral);
+      font-size: 1.2rem;
+    }
+
+    .summary-text {
+      white-space: pre-line;
+      font-size: 0.95rem;
+      color: var(--ink-primary);
+    }
+
+    .feed-section {
+      margin-top: 32px;
+    }
+
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .feed-header h3 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-soft);
+      color: var(--ink-secondary);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .filter-btn.active {
+      background: var(--ink-primary);
+      color: var(--bg-canvas);
+      border-color: var(--ink-primary);
+    }
+
+    .feed-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 14px;
+    }
+
+    .post-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-soft);
+      border-radius: 14px;
+      padding: 15px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .post-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .person-name {
+      font-weight: 700;
+      font-size: 0.96rem;
+    }
+
+    .person-meta {
+      font-size: 0.8rem;
+      color: var(--ink-secondary);
+    }
+
+    .pill {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .pill-a_favor {
+      background: var(--accent-emerald-soft);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(15, 110, 86, 0.25);
+    }
+
+    .pill-en_contra {
+      background: var(--accent-coral-soft);
+      color: var(--accent-coral);
+      border: 1px solid rgba(194, 65, 12, 0.25);
+    }
+
+    .pill-duda {
+      background: var(--accent-amber-soft);
+      color: var(--accent-amber);
+      border: 1px solid rgba(217, 119, 6, 0.3);
+    }
+
+    .post-body {
+      font-size: 0.92rem;
+      color: var(--ink-primary);
+    }
+
+    .post-friends {
+      font-size: 0.78rem;
+      color: var(--ink-secondary);
+      background: var(--bg-subtle);
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+
+    .post-shift {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--accent-emerald);
+    }
+
+    @media (max-width: 780px) {
+      .summaries-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <span class="badge">Simulador Social Multi-Agente</span>
+        <h1>Mirofish Social Sim</h1>
+        <p class="subtitle">
+          Escribe lo que planeas hacer o preguntar. Personas sintéticas con edad, profesión y círculo de amigos
+          opinan, debaten entre sí, cambian de postura y generan los dos resúmenes finales.
+        </p>
+      </div>
+
+      <div class="api-panel">
+        <label for="apiKeyInput">Gemini API Key (opcional):</label>
+        <input type="password" id="apiKeyInput" placeholder="Vacío = Modo Simulación Local" />
+      </div>
+    </header>
+
+    <div class="composer">
+      <input
+        type="text"
+        id="ideaInput"
+        placeholder="Ej: Lanzar una app de táperes saludables por suscripción semanal..."
+        onkeydown="if (event.key === 'Enter') runSimulation()"
+      />
+      <select id="popSize">
+        <option value="12">12 personas</option>
+        <option value="24" selected>24 personas</option>
+        <option value="48">48 personas</option>
+      </select>
+      <button class="btn-run" id="runBtn" onclick="runSimulation()">Simular debate</button>
+    </div>
+
+    <div class="status-bar" id="statusBar"></div>
+
+    <div id="resultsArea" style="display: none;">
+      <div class="metrics" id="metricsGrid"></div>
+
+      <div class="summaries-grid">
+        <section class="summary-pos">
+          <h2>Resumen Positivo — Mayoría a favor y éxito</h2>
+          <div class="summary-text" id="positiveSummary"></div>
+        </section>
+
+        <section class="summary-neg">
+          <h2>Resumen En Contra — Riesgos y lo que no vendría bien</h2>
+          <div class="summary-text" id="negativeSummary"></div>
+        </section>
+      </div>
+
+      <section class="feed-section">
+        <div class="feed-header">
+          <h3>Red social tras el debate entre amigos</h3>
+          <div class="filters">
+            <button class="filter-btn active" data-filter="todos" onclick="setFilter('todos', this)">Todos</button>
+            <button class="filter-btn" data-filter="a_favor" onclick="setFilter('a_favor', this)">A favor</button>
+            <button class="filter-btn" data-filter="en_contra" onclick="setFilter('en_contra', this)">En contra</button>
+            <button class="filter-btn" data-filter="duda" onclick="setFilter('duda', this)">Con dudas</button>
+            <button class="filter-btn" data-filter="cambios" onclick="setFilter('cambios', this)">Cambiaron de opinión</button>
+          </div>
+        </div>
+        <div class="feed-grid" id="feedGrid"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const NOMBRES = [
+      "Valeria Mendoza", "Mateo Castellanos", "Camila Navarro", "Sebastián Paredes",
+      "Sofía Quintero", "Alejandro Rivas", "Isabella Cárdenas", "Gabriel Salgado",
+      "Lucía Montilla", "Daniela Escalante", "Javier Oropeza", "Mariana Briceño",
+      "Nicolás Dugarte", "Paula Figuera", "Tomás Uzcátegui", "Andrea Sosa",
+      "Emiliano Parra", "Fernanda León", "Diego Zambrano", "Natalia Marín",
+      "Rodrigo Blanco", "Catalina Peña", "Samuel Chacón", "Elena Morales",
+      "Bruno Herrera", "Antonella Gil", "Julián Molina", "Victoria Reyes",
+      "Óscar Guzmán", "Renata Silva", "Martín Acosta", "Laura Méndez",
+      "Simón Vera", "Abril Contreras", "Ángel Romero", "Sara Delgado",
+      "Kevin Suárez", "Mía Ferrer", "Hugo Peña", "Paulina Ortiz",
+      "Esteban Campos", "Juliana Ríos", "Cristóbal Paz", "Jimena Soto",
+      "Franco Aguilar", "Carla Núñez", "Iván Pacheco", "Bárbara Vega"
+    ];
+
+    const PROFESIONES = [
+      "Ingeniera de sistemas", "Repartidor urbano", "Contador público",
+      "Enfermera clínica", "Comerciante mayorista", "Diseñador UX",
+      "Estudiante universitario", "Dueño de bodegón", "Profesora de secundaria",
+      "Médico residente", "Vendedor independiente", "Analista financiero"
+    ];
+
+    const ARQUETIPOS = [
+      {
+        estilo: "pragmático",
+        sesgo: "a_favor",
+        basePos: "Me ahorra tiempo entre semana y resuelve la comida sin pensar tanto. Si el precio cierra, lo pruebo.",
+        baseNeg: "Suena bien en papel, pero la logística y el costo recurrente suelen pesar más de lo que parece."
+      },
+      {
+        estilo: "escéptico",
+        sesgo: "en_contra",
+        basePos: "Aunque normalmente desconfío, veo un problema real resuelto aquí si cumplen lo que prometen.",
+        baseNeg: "Veo letra pequeña, desgaste rápido o poca retención pasada la primera semana de novedad."
+      },
+      {
+        estilo: "cauteloso",
+        sesgo: "duda",
+        basePos: "Tiene sentido si empieza pequeño y valida demanda antes de escalar.",
+        baseNeg: "Me genera dudas qué pasa cuando cambia el ánimo del mercado o suben los costos operativos."
+      },
+      {
+        estilo: "ambicioso",
+        sesgo: "a_favor",
+        basePos: "Si logras diferenciarte desde el día uno y armar boca a boca, puede tener tracción real.",
+        baseNeg: "Si es solo una copia más sin ventaja clara, se va a perder entre tantas opciones."
+      }
+    ];
+
+    let currentPosts = [];
+    let currentFilter = "todos";
+
+    function buildPopulation(count) {
+      const agents = [];
+      for (let i = 0; i < count; i++) {
+        const arc = ARQUETIPOS[i % ARQUETIPOS.length];
+        agents.push({
+          id: i,
+          nombre: NOMBRES[i % NOMBRES.length] + (i >= NOMBRES.length ? ` ${i + 1}` : ""),
+          edad: 20 + ((i * 7) % 42),
+          profesion: PROFESIONES[i % PROFESIONES.length],
+          arquetipo: arc.estilo,
+          sesgo: arc.sesgo,
+          basePos: arc.basePos,
+          baseNeg: arc.baseNeg,
+          amigos: []
+        });
+      }
+
+      for (const agent of agents) {
+        const candidates = agents.filter(a => a.id !== agent.id);
+        const friendCount = Math.min(3, candidates.length);
+        for (let k = 0; k < friendCount; k++) {
+          const picked = candidates[(agent.id * 3 + k * 5) % candidates.length];
+          if (!agent.amigos.includes(picked.id)) {
+            agent.amigos.push(picked.id);
+          }
+        }
+      }
+      return agents;
+    }
+
+    function localSimulation(idea, count) {
+      const agents = buildPopulation(count);
+      const round1 = agents.map(a => {
+        const postura = a.sesgo;
+        const texto = postura === "en_contra" ? a.baseNeg : a.basePos;
+        return {
+          ...a,
+          posturaInicial: postura,
+          posturaFinal: postura,
+          cambioOpinion: false,
+          comentario: `Sobre "${idea}": ${texto}`
+        };
+      });
+
+      const byId = Object.fromEntries(round1.map(p => [p.id, p]));
+
+      const round2 = round1.map(person => {
+        const friendNames = person.amigos.map(id => byId[id]?.nombre).filter(Boolean);
+        const friendStances = person.amigos.map(id => byId[id]?.posturaInicial).filter(Boolean);
+
+        const favors = friendStances.filter(s => s === "a_favor").length;
+        const against = friendStances.filter(s => s === "en_contra").length;
+
+        let nuevaPostura = person.posturaInicial;
+        let cambio = false;
+
+        if (person.id % 4 === 1 && against >= 2 && person.posturaInicial !== "en_contra") {
+          nuevaPostura = "en_contra";
+          cambio = true;
+        } else if (person.id % 5 === 2 && favors >= 2 && person.posturaInicial !== "a_favor") {
+          nuevaPostura = "a_favor";
+          cambio = true;
+        } else if (person.id % 6 === 3 && person.posturaInicial === "duda") {
+          nuevaPostura = favors >= against ? "a_favor" : "en_contra";
+          cambio = true;
+        }
+
+        const extra = cambio
+          ? `Después de leer a ${friendNames.join(" y ")}, reajusto mi postura a "${nuevaPostura.replace("_", " ")}" porque me hicieron ver un ángulo clave.`
+          : `Mantengo mi postura tras ver lo que comentaron ${friendNames.join(" y ")}: el punto central sigue siendo qué tan bien se ejecute en la práctica.`;
+
+        return {
+          id: person.id,
+          nombre: person.nombre,
+          edad: person.edad,
+          profesion: person.profesion,
+          arquetipo: person.arquetipo,
+          amigosNombres: friendNames,
+          posturaInicial: person.posturaInicial,
+          postura: nuevaPostura,
+          cambioOpinion: cambio,
+          post: extra
+        };
+      });
+
+      const aFavor = round2.filter(p => p.postura === "a_favor").length;
+      const enContra = round2.filter(p => p.postura === "en_contra").length;
+      const duda = round2.filter(p => p.postura === "duda").length;
+      const cambios = round2.filter(p => p.cambioOpinion).length;
+
+      return {
+        metricas: { total: round2.length, aFavor, enContra, duda, cambios },
+        resumenPositivo:
+          `• Quienes están a favor destacan que "${idea}" responde a necesidades concretas de ahorro de tiempo, practicidad o novedad cuando el valor percibido es claro.\n` +
+          `• Tendría más probabilidades de éxito si se valida primero con un grupo pequeño, se comunica sin promesas infladas y se cuida la experiencia desde el primer uso.\n` +
+          `• El debate entre contactos ayudó a que perfiles indecisos vieran aplicaciones prácticas reales.`,
+        resumenNegativo:
+          `• Quienes se oponen o dudan señalan fricciones típicas: costos recurrentes, dudas sobre la calidad sostenida, resistencia al cambio o falta de diferenciación frente a alternativas actuales.\n` +
+          `• El principal riesgo es que el entusiasmo inicial caiga si la operación diaria resulta compleja o si el cliente no percibe retorno suficiente.\n` +
+          `• Varios perfiles cambiaron hacia una postura crítica al leer advertencias prácticas de su red.`,
+        posts: round2
+      };
+    }
+
+    async function geminiSimulation(apiKey, idea, count) {
+      const agents = buildPopulation(count);
+      const compactAgents = agents.map(({ id, nombre, edad, profesion, arquetipo, amigos }) => ({
+        id, nombre, edad, profesion, arquetipo, amigos
+      }));
+
+      const prompt = `
+Simula una red social de ${count} personas sintéticas debatiendo esta idea o pregunta:
+"${idea}"
+
+Población y red de amigos:
+${JSON.stringify(compactAgents)}
+
+Haz que cada persona reaccione, lea a sus amigos y tenga una postura final tras debatir (algunos pueden cambiar de opinión).
+Devuelve ÚNICAMENTE un JSON válido con esta estructura exacta:
+{
+  "resumenPositivo": "Texto claro con lo positivo, por qué sirve y qué favorece el éxito",
+  "resumenNegativo": "Texto claro con lo negativo, riesgos, objeciones y por qué podría fallar",
+  "posts": [
+    {
+      "id": 0,
+      "nombre": "Nombre",
+      "edad": 28,
+      "profesion": "Profesión",
+      "arquetipo": "estilo",
+      "amigosNombres": ["Amigo 1", "Amigo 2"],
+      "postura": "a_favor" | "en_contra" | "duda",
+      "cambioOpinion": true | false,
+      "post": "Comentario final de 1-2 oraciones tras el debate"
+    }
+  ]
+}
+`;
+
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+      const resp = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: "application/json",
+            temperature: 0.75
+          }
+        })
+      });
+
+      if (!resp.ok) {
+        throw new Error("No se pudo conectar con Gemini API. Revisa tu API Key o usa el Modo Simulación Local.");
+      }
+
+      const raw = await resp.json();
+      const text = raw.candidates?.[0]?.content?.parts?.[0]?.text;
+      const parsed = JSON.parse(text);
+      const posts = parsed.posts || [];
+
+      const aFavor = posts.filter(p => p.postura === "a_favor").length;
+      const enContra = posts.filter(p => p.postura === "en_contra").length;
+      const duda = posts.filter(p => p.postura === "duda").length;
+      const cambios = posts.filter(p => p.cambioOpinion).length;
+
+      return {
+        metricas: { total: posts.length, aFavor, enContra, duda, cambios },
+        resumenPositivo: parsed.resumenPositivo || "",
+        resumenNegativo: parsed.resumenNegativo || "",
+        posts
+      };
+    }
+
+    async function runSimulation() {
+      const idea = document.getElementById("ideaInput").value.trim();
+      const count = parseInt(document.getElementById("popSize").value, 10);
+      const apiKey = document.getElementById("apiKeyInput").value.trim();
+      const statusBar = document.getElementById("statusBar");
+      const runBtn = document.getElementById("runBtn");
+
+      if (!idea) {
+        statusBar.textContent = "Escribe primero una idea, plan o pregunta en la barra.";
+        return;
+      }
+
+      runBtn.disabled = true;
+      statusBar.textContent = apiKey
+        ? "Consultando red social de agentes con Gemini..."
+        : "Generando población, conectando amigos y simulando debate...";
+
+      try {
+        const data = apiKey
+          ? await geminiSimulation(apiKey, idea, count)
+          : localSimulation(idea, count);
+
+        currentPosts = data.posts;
+        renderMetrics(data.metricas);
+        document.getElementById("positiveSummary").textContent = data.resumenPositivo;
+        document.getElementById("negativeSummary").textContent = data.resumenNegativo;
+        renderFeed();
+
+        document.getElementById("resultsArea").style.display = "block";
+        statusBar.textContent = `Simulación completada con ${data.metricas.total} personas.`;
+      } catch (err) {
+        statusBar.textContent = err.message;
+      } finally {
+        runBtn.disabled = false;
+      }
+    }
+
+    function renderMetrics(m) {
+      document.getElementById("metricsGrid").innerHTML = `
+        <div class="metric-box">
+          <div class="metric-label">Personas simuladas</div>
+          <div class="metric-val">${m.total}</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">A favor</div>
+          <div class="metric-val val-pos">${m.aFavor}</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">En contra</div>
+          <div class="metric-val val-neg">${m.enContra}</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Con dudas</div>
+          <div class="metric-val val-amb">${m.duda}</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Cambiaron de opinión</div>
+          <div class="metric-val val-pos">${m.cambios}</div>
+        </div>
+      `;
+    }
+
+    function setFilter(filterKey, btnEl) {
+      currentFilter = filterKey;
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      btnEl.classList.add("active");
+      renderFeed();
+    }
+
+    function renderFeed() {
+      const filtered = currentPosts.filter(p => {
+        if (currentFilter === "todos") return true;
+        if (currentFilter === "cambios") return Boolean(p.cambioOpinion);
+        return p.postura === currentFilter;
+      });
+
+      const labelMap = {
+        a_favor: "A favor",
+        en_contra: "En contra",
+        duda: "Duda"
+      };
+
+      document.getElementById("feedGrid").innerHTML = filtered.map(p => `
+        <article class="post-card">
+          <div class="post-top">
+            <div>
+              <div class="person-name">${escapeHtml(p.nombre)}</div>
+              <div class="person-meta">${p.edad} años · ${escapeHtml(p.profesion)} · ${escapeHtml(p.arquetipo)}</div>
+            </div>
+            <span class="pill pill-${p.postura}">${labelMap[p.postura] || p.postura}</span>
+          </div>
+          <div class="post-body">${escapeHtml(p.post)}</div>
+          <div class="post-friends">
+            Red cercana: ${escapeHtml((p.amigosNombres || []).join(", ") || "Sin contactos")}
+          </div>
+          ${p.cambioOpinion ? `<div class="post-shift">↻ Cambió de opinión tras debatir con su red</div>` : ""}
+        </article>
+      `).join("");
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+  </script>
+</body>
+</html>
